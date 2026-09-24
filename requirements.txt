@@ -1,0 +1,9 @@
+streamlit==1.64.0
+langchain-groq>=0.2
+langgraph>=0.2.6
+langchain-core
+langchain-text-splitters
+sentence-transformers
+pypdf
+requests
+python-dotenv

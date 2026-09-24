@@ -1,0 +1,112 @@
+[
+  {
+    "order_number": "1001",
+    "customer_email": "j.rivera@example.com",
+    "items": "Merino Crewneck Sweater (M), Organic Cotton Tee (M)",
+    "status": "Delivered",
+    "carrier": "USPS",
+    "tracking_number": "9400111899223197428801",
+    "ship_date": "2026-09-15",
+    "estimated_delivery": null,
+    "delivered_date": "2026-09-19"
+  },
+  {
+    "order_number": "1002",
+    "customer_email": "amelia.h@example.com",
+    "items": "Recycled Shell Jacket (L)",
+    "status": "Shipped",
+    "carrier": "UPS",
+    "tracking_number": "1Z999AA10123456784",
+    "ship_date": "2026-09-20",
+    "estimated_delivery": "2026-09-25",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1003",
+    "customer_email": "d.chen88@example.com",
+    "items": "Linen Wrap Dress (S), Organic Cotton Tee (S)",
+    "status": "Processing",
+    "carrier": null,
+    "tracking_number": null,
+    "ship_date": null,
+    "estimated_delivery": "2026-09-27",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1004",
+    "customer_email": "marcus.olsen@example.com",
+    "items": "Full-Grain Leather Belt (34)",
+    "status": "Shipped",
+    "carrier": "USPS",
+    "tracking_number": "9400111899223197428802",
+    "ship_date": "2026-09-21",
+    "estimated_delivery": "2026-09-28",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1005",
+    "customer_email": "priya.nair@example.com",
+    "items": "European Flax Bedding Set (Queen)",
+    "status": "Delivered",
+    "carrier": "UPS",
+    "tracking_number": "1Z999AA10123456785",
+    "ship_date": "2026-09-10",
+    "estimated_delivery": null,
+    "delivered_date": "2026-09-16"
+  },
+  {
+    "order_number": "1006",
+    "customer_email": "t.osei@example.com",
+    "items": "Chino Trousers (32x32), Oxford Shirt (M)",
+    "status": "Delayed",
+    "carrier": "DHL Express",
+    "tracking_number": "DHL4471029384",
+    "ship_date": "2026-09-08",
+    "estimated_delivery": "2026-09-22",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1007",
+    "customer_email": "k.fitzgerald@example.com",
+    "items": "Weekender Tote Bag",
+    "status": "Shipped",
+    "carrier": "USPS",
+    "tracking_number": "9400111899223197428803",
+    "ship_date": "2026-09-22",
+    "estimated_delivery": "2026-09-27",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1008",
+    "customer_email": "s.laurent@example.com",
+    "items": "Soy Candle - Cedar & Fig, Room Spray - Fig Leaf",
+    "status": "Processing",
+    "carrier": null,
+    "tracking_number": null,
+    "ship_date": null,
+    "estimated_delivery": "2026-09-26",
+    "delivered_date": null
+  },
+  {
+    "order_number": "1009",
+    "customer_email": "r.kowalski@example.com",
+    "items": "Merino Beanie, Wool Scarf",
+    "status": "Delivered",
+    "carrier": "USPS",
+    "tracking_number": "9400111899223197428804",
+    "ship_date": "2026-09-05",
+    "estimated_delivery": null,
+    "delivered_date": "2026-09-10"
+  },
+  {
+    "order_number": "1010",
+    "customer_email": "a.mendes@example.com",
+    "items": "Organic Cotton Bath Towel Set",
+    "status": "Shipped",
+    "carrier": "UPS",
+    "tracking_number": "1Z999AA10123456786",
+    "ship_date": "2026-09-23",
+    "estimated_delivery": "2026-09-28",
+    "delivered_date": null
+  }
+]
