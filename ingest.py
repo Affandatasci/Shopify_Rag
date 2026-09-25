@@ -2,9 +2,17 @@
 Norhaven & Co. RAG demo -- one-time ingestion script.
 
 Reads norhaven_policies_faq.pdf, splits it into chunks, embeds each chunk
-with mxbai-embed-large-v1 (forced to CPU -- same fix used on Forge Physique
+with bge-small-en-v1.5 (forced to CPU -- same fix used on Forge Physique
 to avoid ZeroGPU virtual-CUDA producing NaN vectors), and upserts everything
 into Qdrant Cloud over the plain REST API.
+
+Using bge-small (33M params, ~130MB) instead of the larger mxbai-embed-
+large-v1 (335M params, ~1.3GB) used on Forge Physique -- the large model's
+memory footprint was pushing the Streamlit Community Cloud deployment over
+its free-tier RAM limit and causing repeated crash-restarts. bge-small
+uses the same normalized-cosine-similarity setup and the same "prefix the
+query, not the documents" convention, so nothing else about this pipeline
+had to change.
 
 Deliberately not using qdrant-client's search()/query_points() here: on
 Forge Physique, search() was removed in qdrant-client v1.16.0 and
@@ -37,8 +45,8 @@ PDF_PATH = os.path.join(os.path.dirname(__file__), "norhaven_policies_faq.pdf")
 QDRANT_URL = os.environ["QDRANT_URL"].rstrip("/")
 QDRANT_API_KEY = os.environ["QDRANT_API_KEY"]
 COLLECTION = os.environ.get("QDRANT_COLLECTION", "norhaven_demo")
-EMBED_MODEL_NAME = "mixedbread-ai/mxbai-embed-large-v1"
-EMBED_DIM = 1024
+EMBED_MODEL_NAME = "BAAI/bge-small-en-v1.5"
+EMBED_DIM = 384
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 120
 

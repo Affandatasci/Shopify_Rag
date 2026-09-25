@@ -35,7 +35,12 @@ COLLECTION = os.environ.get("QDRANT_COLLECTION", "norhaven_demo")
 GROQ_API_KEY = os.environ["GROQ_API_KEY"]
 MAIN_MODEL = os.environ.get("MAIN_MODEL", "openai/gpt-oss-120b")
 
-EMBED_MODEL_NAME = "mixedbread-ai/mxbai-embed-large-v1"
+# Swapped from mxbai-embed-large-v1 (335M params, ~1.3GB) to bge-small
+# (33M params, ~130MB) to fit Streamlit Community Cloud's free-tier RAM --
+# the large model was pushing the app's memory over the limit and causing
+# repeated crash-restarts. bge-small uses the same "prefix the query"
+# convention, so search_policies() below didn't need to change at all.
+EMBED_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 ORDERS_PATH = os.path.join(os.path.dirname(__file__), "orders.json")
 TOP_K = 4
 
@@ -58,7 +63,7 @@ def search_policies(query: str) -> str:
     about products, sizing, shipping, returns, discounts, loyalty, store
     locations, or company policy. Always use this before answering a policy
     or product question -- never answer one from memory."""
-    # mxbai-embed-large-v1's model card asks for this prefix on queries
+    # bge-small-en-v1.5's model card asks for this prefix on queries
     # only -- the documents embedded in ingest.py are NOT prefixed.
     prefixed = f"Represent this sentence for searching relevant passages: {query}"
     vector = _embed_model.encode(prefixed, normalize_embeddings=True).tolist()
