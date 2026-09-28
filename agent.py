@@ -74,7 +74,13 @@ def search_policies(query: str) -> str:
         json={"vector": vector, "limit": TOP_K, "with_payload": True},
         timeout=30,
     )
+    print("QDRANT SAYS:", resp.status_code, resp.text)
     resp.raise_for_status()
+
+
+
+
+
     hits = resp.json()["result"]
     if not hits:
         return "No matching content found in Norhaven's policies."
