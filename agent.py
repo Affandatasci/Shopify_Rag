@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.tools import tool
+from langchain_anthropic import ChatAnthropic
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 
@@ -32,8 +33,8 @@ load_dotenv()
 QDRANT_URL = os.environ["QDRANT_URL"].rstrip("/")
 QDRANT_API_KEY = os.environ["QDRANT_API_KEY"]
 COLLECTION = os.environ.get("QDRANT_COLLECTION", "norhaven_demo")
-GROQ_API_KEY = os.environ["GROQ_API_KEY"]
-MAIN_MODEL = os.environ.get("MAIN_MODEL", "openai/gpt-oss-120b")
+ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+MAIN_MODEL = "claude-haiku-4-5"
 
 # Swapped from mxbai-embed-large-v1 (335M params, ~1.3GB) to bge-small
 # (33M params, ~130MB) to fit Streamlit Community Cloud's free-tier RAM --
@@ -116,7 +117,7 @@ tools (for example "can I return my order, it's #1004"), call both before \
 answering. Keep answers short and direct, in plain customer-support \
 language. If nothing relevant is found, say so instead of guessing."""
 
-_model = ChatGroq(model=MAIN_MODEL, api_key=GROQ_API_KEY, temperature=0.1)
+_model = ChatAnthropic(model=MAIN_MODEL, api_key=ANTHROPIC_API_KEY, temperature=0.1)
 _graph = create_react_agent(_model, tools=[search_policies, lookup_order], prompt=SYSTEM_PROMPT)
 
 
