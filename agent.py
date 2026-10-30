@@ -25,7 +25,6 @@ from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.tools import tool
 from langchain_anthropic import ChatAnthropic
-# from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 
 load_dotenv()
@@ -34,7 +33,7 @@ QDRANT_URL = os.environ["QDRANT_URL"].rstrip("/")
 QDRANT_API_KEY = os.environ["QDRANT_API_KEY"]
 COLLECTION = os.environ.get("QDRANT_COLLECTION", "norhaven_demo")
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
-MAIN_MODEL = "claude-haiku-4-5"
+MAIN_MODEL = os.environ.get("MAIN_MODEL", "claude-haiku-5-5")
 
 # Swapped from mxbai-embed-large-v1 (335M params, ~1.3GB) to bge-small
 # (33M params, ~130MB) to fit Streamlit Community Cloud's free-tier RAM --
@@ -78,10 +77,6 @@ def search_policies(query: str) -> str:
     print("QDRANT SAYS:", resp.status_code, resp.text)
     resp.raise_for_status()
 
-
-
-
-
     hits = resp.json()["result"]
     if not hits:
         return "No matching content found in Norhaven's policies."
@@ -117,8 +112,57 @@ tools (for example "can I return my order, it's #1004"), call both before \
 answering. Keep answers short and direct, in plain customer-support \
 language. If nothing relevant is found, say so instead of guessing."""
 
-_model = ChatAnthropic(model=MAIN_MODEL, api_key=ANTHROPIC_API_KEY, temperature=0.1)
+
+class _HaikuNoTemp(ChatAnthropic):
+    """claude-haiku-5-5 rejects `temperature`/`top_k`/`top_p` outright
+    (400: "temperature is deprecated for this model") -- langchain-anthropic
+    only auto-strips these for claude-fable-5* models, not this one yet,
+    so we strip them ourselves from the outgoing request payload."""
+
+    def _get_request_payload(self, input_, *, stop=None, **kwargs):
+        payload = super()._get_request_payload(input_, stop=stop, **kwargs)
+        payload.pop("temperature", None)
+        payload.pop("top_k", None)
+        payload.pop("top_p", None)
+        return payload
+
+
+_model = _HaikuNoTemp(model=MAIN_MODEL, api_key=ANTHROPIC_API_KEY)
 _graph = create_react_agent(_model, tools=[search_policies, lookup_order], prompt=SYSTEM_PROMPT)
+
+
+def _extract_text(content) -> str:
+    """claude-haiku-5-5 returns its answer as a LIST of content blocks --
+    a `thinking` block plus a `text` block -- instead of a plain string,
+    even though we never requested thinking (same "adaptive thinking"
+    behavior that forced the temperature strip above). Pull out only the
+    text block(s); drop everything else (thinking, signatures, etc.)."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = [
+            block.get("text", "")
+            for block in content
+            if isinstance(block, dict) and block.get("type") == "text"
+        ]
+        return "\n".join(p for p in parts if p)
+    return str(content)
+
+def _extract_text(content) -> str:
+    """claude-haiku-5-5 returns its answer as a LIST of content blocks --
+    a `thinking` block plus a `text` block -- instead of a plain string,
+    on harder queries (adaptive thinking kicks in by itself). Pull out
+    only the text block(s); drop everything else."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = [
+            block.get("text", "")
+            for block in content
+            if isinstance(block, dict) and block.get("type") == "text"
+        ]
+        return "\n".join(p for p in parts if p)
+    return str(content)
 
 
 def answer(message: str, history: list) -> str:
@@ -136,7 +180,8 @@ def answer(message: str, history: list) -> str:
     result = _graph.invoke({"messages": messages})
 
     for msg in reversed(result["messages"]):
-        content = getattr(msg, "content", "")
-        if isinstance(msg, AIMessage) and content:
-            return content
+        if isinstance(msg, AIMessage) and msg.content:
+            text = _extract_text(msg.content)
+            if text:
+                return text
     return "Sorry, I couldn't come up with an answer to that -- please try rephrasing."
